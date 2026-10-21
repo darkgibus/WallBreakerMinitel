@@ -15,6 +15,8 @@ public:
   void draw();
   bool checkCollision(balle& b, int& score);
 
+  int getLife() const;
+  
 protected:
 
   Minitel* m;

@@ -6,6 +6,7 @@
 #include "mur.h"
 
 #define MAXLIFE 3
+#define MAXLEVEL 2
 
 Minitel minitel(Serial2,16,17);
 
@@ -14,12 +15,19 @@ balle* bal = NULL;
 mur* mr = NULL;
 
 int score = 0;
+int levelNum = 0;
 int life = MAXLIFE;
 
-int level[WALLSIZE] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
-                        0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int level[MAXLEVEL][WALLSIZE] = {
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0  },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+};
 
 void resetGame() {
 
@@ -39,7 +47,7 @@ void resetGame() {
 
   raq = new raquette(&minitel);
   bal = new balle(&minitel, raq);
-  mr = new mur(&minitel, level);
+  mr = new mur(&minitel, level[levelNum]);
 
   score = 0;
   life = MAXLIFE;
@@ -86,6 +94,8 @@ void setup() {
     minitel.changeSpeed(4800); // 4800 bauds accélère considérablement l'affichage
   }
 
+  levelNum = 0;
+  
   resetGame();
 
 }
@@ -128,6 +138,18 @@ void loop() {
   mr->draw();
   drawHUD();
   
+  if (mr->getLife() <= 0) {
+
+    minitel.bip();
+
+    delay(3000);
+
+    levelNum++;
+    if (levelNum >= MAXLEVEL)
+    levelNum = 0;
+
+    resetGame();
+  }
   if (bal->isOut()) {
     
     minitel.bip();
@@ -146,6 +168,8 @@ void loop() {
       minitel.print("GAME OVER");
 
       delay(3000);
+
+      levelNum = 0;
 
       // Relance le jeux
       resetGame();

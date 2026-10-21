@@ -41,10 +41,11 @@ void mur::draw() {
     
     if (bri[i])
 
-      if (bri[i]->getLife() == 0)
+      if (bri[i]->getLife() == 0) {
+        life--;
         // Détruit la brique
         removeBrique(i);
-      else {
+      } else {
         if (bri[i]->isRedraw() && lignage) {
           // Si une brique doit être redessiner,
           // passe en mode lignage
@@ -116,4 +117,9 @@ void mur::removeBrique(int i) {
 
   delete bri[i];
   bri[i] = NULL;
+}
+
+int mur::getLife() const {
+
+  return life;
 }
