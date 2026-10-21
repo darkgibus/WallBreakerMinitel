@@ -4,6 +4,8 @@ mur::mur(Minitel* m, int* l) {
 
   this->m = m;
 
+  // Construction du mur
+  life = 0;
   for (int i = 0; i < WALLSIZE; i++) {
 
     if (bri[i])
@@ -16,6 +18,9 @@ mur::mur(Minitel* m, int* l) {
     if (l[i] == 1)
       bri[i] = new brique_incassable(m, ((i % 10) * 4) + 1, (i / 10) + 1);
 
+    if (bri[i])
+      if (bri[i]->getLife() > 0)
+        life++;
   }
 }
 mur::~mur() {

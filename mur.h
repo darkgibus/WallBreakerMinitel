@@ -20,6 +20,7 @@ protected:
   Minitel* m;
 
   brique* bri[WALLSIZE] = { NULL };
+  int life;
 
   void removeBrique(int i);
 };
