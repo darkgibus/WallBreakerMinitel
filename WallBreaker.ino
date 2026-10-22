@@ -18,6 +18,8 @@ int score = 0;
 int levelNum = 0;
 int life = MAXLIFE;
 
+String cheat = "";
+
 int level[MAXLEVEL][WALLSIZE] = {
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -52,8 +54,43 @@ void resetGame() {
   score = 0;
   life = MAXLIFE;
 
+  cheat = "";
+
   while(minitel.getKeyCode());  // Attend que le buffer de touches soit vide
 
+}
+
+void levelup() {
+
+  minitel.bip();
+
+  drawVictory();
+
+  delay(3000);
+
+  levelNum++;
+  if (levelNum >= MAXLEVEL)
+    levelNum = 0;
+
+  resetGame();
+}
+void gameover() {
+  // Met à jour le HUD
+  drawHUD();
+  
+  // Affiche le game over
+  minitel.textMode();
+  minitel.attributs(FIN_LIGNAGE);
+  minitel.attributs(DOUBLE_GRANDEUR);
+  minitel.moveCursorXY(12, 12);
+  minitel.print("GAME OVER");
+
+  delay(3000);
+
+  levelNum = 0;
+
+  // Relance le jeux
+  resetGame();
 }
 
 void drawHUD() {
@@ -85,6 +122,30 @@ void drawHUD() {
   }
 }
 
+void drawVictory() {
+
+  const int c = 31;
+
+  minitel.attributs(FIN_LIGNAGE);
+  minitel.textMode();
+
+  String text[6] = {
+    { "#    # #   ### ###  ##  ###  ### #" },
+    { "#    # #  #     #  #  # #  # #   #" },
+    { " #  #  # #      #  #  # ###  ### #" },
+    { " #  #  # #      #  #  # # #  #   #" },
+    { " #  #  #  #     #  #  # #  # #    " },
+    { "  #    #   ###  #   ##  #  # ### #" }
+  };
+
+  for (int x = 40; x > 0; x--) {
+    for (int i = 0; i < 6; i++) {
+      minitel.moveCursorXY(x, 10 + i);
+      minitel.print(text[i].substring(0, 40 - x));
+    }
+  }
+}
+
 void setup() {
 
   Serial.begin(115200);  // Le port de débug
@@ -102,10 +163,15 @@ void setup() {
 
 void loop() {
 
+  unsigned long currentTime = millis();
+
   /*---------------------*/
   /* Gestion des entrées */
   /*---------------------*/
   unsigned long touche = minitel.getKeyCode();
+
+  const unsigned long cheatinterval = 1000;
+  static unsigned long memo_cheatCurrentTime = 0;
 
   if (touche) {
 
@@ -118,10 +184,23 @@ void loop() {
     if (touche == ' ') {
       bal->launch();
     }
+    
+  }
+  if (touche >= 'A' && touche <= 'Z') {
+    memo_cheatCurrentTime = currentTime;   
+
+    cheat = cheat + static_cast<char>(touche);
+
+    if (cheat == "LEVELUP") {
+      levelup();
+    }
+  } else if (currentTime - memo_cheatCurrentTime >= cheatinterval) {
+    memo_cheatCurrentTime = currentTime;
+
+    cheat = "";
   }
 
   const unsigned long interval = 100;
-  unsigned long currentTime = millis();
   static unsigned long memo_currentTime = 0;
 
   if (currentTime - memo_currentTime >= interval) {
@@ -139,16 +218,7 @@ void loop() {
   drawHUD();
   
   if (mr->getLife() <= 0) {
-
-    minitel.bip();
-
-    delay(3000);
-
-    levelNum++;
-    if (levelNum >= MAXLEVEL)
-    levelNum = 0;
-
-    resetGame();
+    levelup();
   }
   if (bal->isOut()) {
     
@@ -157,22 +227,7 @@ void loop() {
     life--;
 
     if (life <= 0) {
-      // Met à jour le HUD
-      drawHUD();
-      
-      // Affiche le game over
-      minitel.textMode();
-      minitel.attributs(FIN_LIGNAGE);
-      minitel.attributs(DOUBLE_GRANDEUR);
-      minitel.moveCursorXY(12, 12);
-      minitel.print("GAME OVER");
-
-      delay(3000);
-
-      levelNum = 0;
-
-      // Relance le jeux
-      resetGame();
+      gameover();
     } else {
 
       delete raq;
