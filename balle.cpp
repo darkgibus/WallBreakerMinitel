@@ -1,5 +1,8 @@
 #include "balle.h"
 
+const int balle::up = -1;
+const int balle::down = 1;
+
 balle::balle(Minitel* m, raquette* r) {
 
   this->m = m;
@@ -15,6 +18,9 @@ balle::balle(Minitel* m, raquette* r) {
   isLaunch = false;
   redraw = true;
   out = false;
+
+  sm = false;
+  st = true;
 }
 balle::~balle() {
   erase();
@@ -34,6 +40,14 @@ void balle::update(raquette* r) {
 
   if (isLaunch) {
 
+    if (!st)
+      return;
+
+    if (sm)
+      st = false;
+    else
+      st = true;
+
     pos_Y += speed_Y;
     pos_X += speed_X;
 
@@ -41,8 +55,8 @@ void balle::update(raquette* r) {
       pos_X = 1;
       bounceX();
     }
-    if (pos_X >= 41) {  // Rebond à droite
-      pos_X = 41;
+    if (pos_X >= 40) {  // Rebond à droite
+      pos_X = 40;
       bounceX();
     } 
 
@@ -89,6 +103,13 @@ void balle::draw() {
     m->graphic(63, pos_X, pos_Y);
     redraw = false;
   }
+}
+
+void balle::stepMode(bool s) {
+  sm = s;
+}
+void balle::step() {
+  st = true;
 }
 
 int balle::getPos_Y() const {

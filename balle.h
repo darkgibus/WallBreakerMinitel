@@ -16,11 +16,17 @@ public:
   void launch();
   void draw();
 
+  void stepMode(bool s);
+  void step();
+
   int getPos_Y() const;
   int getPos_X() const;
   int getSpeed_Y() const;
 
   bool isOut();
+
+  static const int up;
+  static const int down;
 
 protected:
 
@@ -35,4 +41,6 @@ protected:
   bool out;   // Balle perdue
 
   void erase();
+
+  bool sm, st;
 };

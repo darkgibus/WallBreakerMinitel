@@ -190,6 +190,9 @@ void loop() {
     if (touche == ' ') {
       bal->launch();
     }
+    if (touche == 'S') {
+      bal->step();
+    }
   }
   if (touche >= 'A' && touche <= 'Z') {
     c.reset();   
@@ -198,6 +201,9 @@ void loop() {
 
     if (cheat == "LEVELUP") {
       levelup();
+    }
+    if (cheat == "STEP") {
+      bal->stepMode(true);
     }
   } else if (c.isElapsed()) {
     c.reset();

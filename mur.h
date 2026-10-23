@@ -13,7 +13,7 @@ public:
   ~mur();
 
   void draw();
-  bool checkCollision(balle& b, int& score);
+  void checkCollision(balle& b, int& score);
 
   int getLife() const;
   

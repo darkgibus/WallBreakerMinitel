@@ -57,58 +57,61 @@ void mur::draw() {
   }
 }
 
-bool mur::checkCollision(balle& b, int& score) {
+void mur::checkCollision(balle& b, int& score) {
+
+  int bx = b.getPos_X();
+  int by = b.getPos_Y();
 
   for (int i = WALLSIZE - 1; i >= 0; i--) {
 
     if (bri[i]) {
 
-      if (b.getSpeed_Y() == -1 && b.getPos_Y() <= bri[i]->getPos_Y() + 1) { // Collision sur une brique par la balle venant du bas
-        if (b.getPos_X() >= bri[i]->getPos_X() && b.getPos_X() <= bri[i]->getPos_X() + bri[i]->getSize_X()) {
+      int brLeft = bri[i]->getPos_X();
+      int brRight = bri[i]->getPos_X() + bri[i]->getSize_X() - 1;
+      int brTop = bri[i]->getPos_Y() - 1;
+      int brBottom = bri[i]->getPos_Y() + 1;
+
+      if (bx >= brLeft && bx <= brRight) {
+
+        if ((by == brBottom && b.getSpeed_Y() == balle::up) || (by == brTop && b.getSpeed_Y() == balle::down)) {
+
+          int l = bri[i]->hit();
+          if (l == 0) {
+            score++;
+          }
+
+          b.bounceY();
+          return;
+        }
+      }
+      if (bx == brLeft - 1 || bx == brRight + 1) {
+
+        if (by == bri[i]->getPos_Y()) {
           
           int l = bri[i]->hit();
-
-          b.bounceY();
-
           if (l == 0) {
             score++;
           }
-
-          return true;
+          
+          b.bounceX();
+          return;
         }
-      }
-      if (b.getSpeed_Y() == 1 && b.getPos_Y() <= bri[i]->getPos_Y() + 1) { // Collision sur une brique par la balle venant du dessus
-        if (b.getPos_X() >= bri[i]->getPos_X() && b.getPos_X() <= bri[i]->getPos_X() + bri[i]->getSize_X()) {
+
+        if (by == brTop || by == brBottom) {
 
           int l = bri[i]->hit();
-
-          b.bounceY();
-
           if (l == 0) {
             score++;
           }
-
-          return true;
-        }
-      }
-      if (b.getPos_Y() == bri[i]->getPos_Y()) { // Collision sur le côté
-        if (b.getPos_X() == bri[i]->getPos_X() - 1 || b.getPos_X() == bri[i]->getPos_X() + bri[i]->getSize_X() + 1) {
-
-          int l = bri[i]->hit();
 
           b.bounceX();
+          b.bounceY();
           
-          if (l == 0) {
-            score++;
-          }
-
-          return true;
+          return;
         }
       }
     }
   }
-
-  return false;
 }
 
 void mur::removeBrique(int i) {
