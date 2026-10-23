@@ -4,6 +4,7 @@
 #include "balle.h"
 #include "brique.h"
 #include "mur.h"
+#include "timer.h"
 
 #define MAXLIFE 3
 #define MAXLEVEL 2
@@ -74,6 +75,7 @@ void levelup() {
 
   resetGame();
 }
+
 void gameover() {
   // Met à jour le HUD
   drawHUD();
@@ -162,49 +164,49 @@ void setup() {
 }
 
 void loop() {
-
-  unsigned long currentTime = millis();
+  
+  static timer t(80);
+  static timer g(100);
+  static timer c(1000);
+ 
+  timer::update();
 
   /*---------------------*/
   /* Gestion des entrées */
   /*---------------------*/
   unsigned long touche = minitel.getKeyCode();
 
-  const unsigned long cheatinterval = 1000;
-  static unsigned long memo_cheatCurrentTime = 0;
-
   if (touche) {
+    if (t.isElapsed()) {
+      t.reset();
 
-    if (touche == TOUCHE_FLECHE_GAUCHE || touche == 'Q') {
-      raq->moveLeft();
-    }
-    if (touche == TOUCHE_FLECHE_DROITE || touche == 'D') {
-      raq->moveRight();
+      if (touche == TOUCHE_FLECHE_GAUCHE || touche == 'Q') {
+        raq->moveLeft();
+      }
+      if (touche == TOUCHE_FLECHE_DROITE || touche == 'D') {
+        raq->moveRight();
+      }
     }
     if (touche == ' ') {
       bal->launch();
     }
-    
   }
   if (touche >= 'A' && touche <= 'Z') {
-    memo_cheatCurrentTime = currentTime;   
+    c.reset();   
 
     cheat = cheat + static_cast<char>(touche);
 
     if (cheat == "LEVELUP") {
       levelup();
     }
-  } else if (currentTime - memo_cheatCurrentTime >= cheatinterval) {
-    memo_cheatCurrentTime = currentTime;
+  } else if (c.isElapsed()) {
+    c.reset();
 
     cheat = "";
   }
 
-  const unsigned long interval = 100;
-  static unsigned long memo_currentTime = 0;
-
-  if (currentTime - memo_currentTime >= interval) {
-    memo_currentTime = currentTime;
+  if (g.isElapsed()) {
+    g.reset();
 
     bal->update(raq);
 
