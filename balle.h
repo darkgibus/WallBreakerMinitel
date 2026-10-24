@@ -22,11 +22,14 @@ public:
   int getPos_Y() const;
   int getPos_X() const;
   int getSpeed_Y() const;
+  int getSpeed_X() const;
 
   bool isOut();
 
   static const int up;
   static const int down;
+  static const int left;
+  static const int right;
 
 protected:
 

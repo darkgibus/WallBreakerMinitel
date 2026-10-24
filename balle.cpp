@@ -2,6 +2,8 @@
 
 const int balle::up = -1;
 const int balle::down = 1;
+const int balle::left = -1;
+const int balle::right = 1;
 
 balle::balle(Minitel* m, raquette* r) {
 
@@ -13,8 +15,8 @@ balle::balle(Minitel* m, raquette* r) {
   pos_Y = r->getPos_Y() - 1;
   lastPos_X = pos_X;
   lastPos_Y = pos_Y;
-  speed_Y = -1;
-  speed_X = 1;
+  speed_Y = up;
+  speed_X = right;
   isLaunch = false;
   redraw = true;
   out = false;
@@ -64,12 +66,12 @@ void balle::update(raquette* r) {
       pos_Y = 1;
       bounceY();
     }
-    if (pos_Y >= r->getPos_Y() - 1 && pos_X >= r->getPos_X() && pos_X <= r->getPos_X() + r->getSize()) {  // Collision avec la raquette
+    if (r->isInside(pos_X + speed_X, pos_Y + speed_Y)) {  // Collision avec la raquette
       bounceY();
       if (pos_X < (r->getPos_X() + (r->getSize() / 2)))
-        speed_X = -1;
+        speed_X = left;
       else
-        speed_X = 1;
+        speed_X = right;
     }
     if (pos_Y >=25 ) {  // bas de l'écran
       pos_Y = 25;
@@ -87,8 +89,8 @@ void balle::update(raquette* r) {
 
 void balle::launch() {
   isLaunch = true;
-  speed_Y = -1;
-  speed_X = 1;
+  speed_Y = up;
+  speed_X = right;
 }
 
 void balle::draw() {
@@ -120,6 +122,9 @@ int balle::getPos_X() const {
 }
 int balle::getSpeed_Y() const {
   return speed_Y;
+}
+int balle::getSpeed_X() const {
+  return speed_X;
 }
 
 bool balle::isOut() {

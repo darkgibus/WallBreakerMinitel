@@ -18,6 +18,8 @@ public:
   int getPos_X() const;
   int getSize() const;
 
+  bool isInside(int x, int y);
+  
 protected:
 
   Minitel* m;

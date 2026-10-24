@@ -77,6 +77,11 @@ int raquette::getSize() const {
   return size;
 }
 
+bool raquette::isInside(int x, int y) {
+
+  return (y == pos_Y) && (x >= pos_X) && (x < pos_X + getSize());
+}
+
 // Efface la raquette
 //
 void raquette::erase() {

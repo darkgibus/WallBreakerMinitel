@@ -64,16 +64,32 @@ void mur::checkCollision(balle& b, int& score) {
 
   for (int i = WALLSIZE - 1; i >= 0; i--) {
 
+    // Future position de la balle
+    int fbx = bx + b.getSpeed_X();
+    int fby = by + b.getSpeed_Y();
+
     if (bri[i]) {
 
       int brLeft = bri[i]->getPos_X();
       int brRight = bri[i]->getPos_X() + bri[i]->getSize_X() - 1;
-      int brTop = bri[i]->getPos_Y() - 1;
-      int brBottom = bri[i]->getPos_Y() + 1;
+      int brY = bri[i]->getPos_Y();
+
+      // Collision sur le côté
+      //
+      if ((bx == brLeft - 1 || bx == brRight + 1) && (by == brY)) {
+
+        int l = bri[i]->hit();
+        if (l == 0) {
+          score++;
+        }
+          
+        b.bounceX();
+        continue;
+      }
 
       if (bx >= brLeft && bx <= brRight) {
 
-        if ((by == brBottom && b.getSpeed_Y() == balle::up) || (by == brTop && b.getSpeed_Y() == balle::down)) {
+        if ((by == (brY + 1) && b.getSpeed_Y() == balle::up) || (by == (brY - 1) && b.getSpeed_Y() == balle::down)) {
 
           int l = bri[i]->hit();
           if (l == 0) {
@@ -81,34 +97,19 @@ void mur::checkCollision(balle& b, int& score) {
           }
 
           b.bounceY();
-          return;
+          continue;
         }
       }
-      if (bx == brLeft - 1 || bx == brRight + 1) {
 
-        if (by == bri[i]->getPos_Y()) {
-          
-          int l = bri[i]->hit();
-          if (l == 0) {
-            score++;
-          }
-          
-          b.bounceX();
-          return;
+      if (bri[i]->isInside(fbx, fby)) {
+
+        int l = bri[i]->hit();
+        if (l == 0) {
+          score++;
         }
 
-        if (by == brTop || by == brBottom) {
-
-          int l = bri[i]->hit();
-          if (l == 0) {
-            score++;
-          }
-
-          b.bounceX();
-          b.bounceY();
-          
-          return;
-        }
+        b.bounceY();
+        continue;
       }
     }
   }

@@ -56,6 +56,11 @@ bool brique::isRedraw() const {
   return redraw;
 }
 
+bool brique::isInside(int x, int y) {
+
+  return (y == pos_Y) && (x >= pos_X) && (x < pos_X + getSize_X());
+}
+
 brique_incassable::brique_incassable(Minitel* m, int X, int Y) : brique(m, X, Y) { 
 
   life = -1;

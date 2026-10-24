@@ -18,6 +18,8 @@ public:
   int getLife() const;
   bool isRedraw() const;
 
+  bool isInside(int x, int y);
+
 protected:
 
   Minitel* m;
